@@ -2,7 +2,7 @@ name: Gerar APK Navegador Dev
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "principal" ]
   workflow_dispatch:
 
 jobs:
@@ -30,18 +30,23 @@ jobs:
       - name: Instalar Apache Cordova
         run: npm install -g cordova
 
-      - name: Preparar projeto e plataforma Android
+      - name: Criar e compilar aplicativo Android
         run: |
-          mkdir -p temp_app
-          cp -r www temp_app/
+          cordova create temp_app com.dev.navegadorcodigo "Navegador Dev"
+          rm -rf temp_app/www/*
+          cp -r www/* temp_app/www/
           cp config.xml temp_app/
           cd temp_app
           cordova platform add android
           cordova plugin add cordova-plugin-inappbrowser
-          cordova build android
+          cordova build android --verbose
+          mkdir -p ../apk_pronto
+          find platforms/android -name "*.apk" -exec cp {} ../apk_pronto/ \;
+          ls -la ../apk_pronto/
 
       - name: Disponibilizar APK para download
         uses: actions/upload-artifact@v4
         with:
           name: Navegador-Dev-APK
-          path: temp_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          path: apk_pronto/*.apk
+          if-no-files-found: error
