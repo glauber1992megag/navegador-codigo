@@ -39,14 +39,11 @@ jobs:
           cd temp_app
           cordova platform add android
           cordova plugin add cordova-plugin-inappbrowser
-          cordova build android --verbose
-          mkdir -p ../apk_pronto
-          find platforms/android -name "*.apk" -exec cp {} ../apk_pronto/ \;
-          ls -la ../apk_pronto/
+          cordova build android
 
       - name: Disponibilizar APK para download
         uses: actions/upload-artifact@v4
         with:
           name: Navegador-Dev-APK
-          path: apk_pronto/*.apk
+          path: "**/app-debug.apk"
           if-no-files-found: error
