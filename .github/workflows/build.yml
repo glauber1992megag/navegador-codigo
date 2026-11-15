@@ -1,0 +1,47 @@
+name: Gerar APK Navegador Dev
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar arquivos do projeto
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar Apache Cordova
+        run: npm install -g cordova
+
+      - name: Preparar projeto e plataforma Android
+        run: |
+          mkdir -p temp_app
+          cp -r www temp_app/
+          cp config.xml temp_app/
+          cd temp_app
+          cordova platform add android
+          cordova plugin add cordova-plugin-inappbrowser
+          cordova build android
+
+      - name: Disponibilizar APK para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: Navegador-Dev-APK
+          path: temp_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
