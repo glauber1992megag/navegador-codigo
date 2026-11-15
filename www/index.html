@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Navegador Dev - Código Intacto</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      padding: 16px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-top: 10px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      color: #4fc3f7;
+    }
+
+    header p {
+      font-size: 13px;
+      color: #aaaaaa;
+      margin-top: 4px;
+    }
+
+    .caixa-busca {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background-color: #1e1e1e;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: #252526;
+      color: #ffffff;
+      font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #4fc3f7;
+    }
+
+    .btn-principal {
+      width: 100%;
+      padding: 14px;
+      background-color: #007acc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-principal:active {
+      background-color: #005f9e;
+    }
+
+    .atalhos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-atalho {
+      padding: 12px;
+      background-color: #252526;
+      color: #e0e0e0;
+      border: 1px solid #333;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .btn-atalho:active {
+      background-color: #333333;
+    }
+
+    .secao-leitor {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #1e1e1e;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      overflow: hidden;
+    }
+
+    .secao-leitor h2 {
+      font-size: 14px;
+      color: #cccccc;
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      background-color: #252526;
+      color: #d4d4d4;
+      border: 1px solid #444;
+      border-radius: 6px;
+      padding: 8px;
+      font-family: monospace;
+      font-size: 12px;
+      margin-bottom: 8px;
+      resize: none;
+    }
+
+    .visualizador {
+      flex: 1;
+      background-color: #0d0d0d;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 10px;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+
+    .visualizador pre {
+      white-space: pre !important;
+      word-wrap: normal !important;
+      font-family: monospace;
+      font-size: 13px;
+      color: #9cdcfe;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Navegador Dev</h1>
+    <p>Abre sites com bloqueio de quebra de código ativo</p>
+  </header>
+
+  <div class="caixa-busca">
+    <input type="text" id="campo-url" placeholder="Digite um site ou pesquise no Google..." value="https://google.com">
+    <button class="btn-principal" onclick="abrirNavegadorNativo()">Abrir no Modo Código Intacto</button>
+  </div>
+
+  <div class="atalhos">
+    <button class="btn-atalho" onclick="abrirAtalho('https://google.com')">Google Busca</button>
+    <button class="btn-atalho" onclick="abrirAtalho('https://google.com')">Google Gemini</button>
+    <button class="btn-atalho" onclick="abrirAtalho('https://github.com')">GitHub</button>
+    <button class="btn-atalho" onclick="abrirAtalho('https://stackoverflow.com')">StackOverflow</button>
+  </div>
+
+  <div class="secao-leitor">
+    <h2>Visualizador Rápido Offline (Cole para desentortar):</h2>
+    <textarea id="entrada-offline" placeholder="Cole aqui qualquer código copiado para ler sem quebra..."></textarea>
+    <button class="btn-atalho" style="margin-bottom: 8px; background-color: #28a745; color: white;" onclick="mostrarOffline()">Limpar Quebras</button>
+    <div class="visualizador">
+      <pre id="saida-offline">// O código aparecerá intacto aqui com barra lateral...</pre>
+    </div>
+  </div>
+
+  <!-- Script do Cordova/Capacitor carregado automaticamente no APK -->
+  <script src="cordova.js"></script>
+  <script>
+    // Regra CSS que será injetada dentro de TODOS os sites abertos
+    const cssSemQuebra = `
+      pre, code, pre *, code *, .code-block, .highlight {
+        white-space: pre !important;
+        word-wrap: normal !important;
+        overflow-wrap: normal !important;
+        word-break: normal !important;
+      }
+      pre, .code-block, .highlight {
+        overflow-x: auto !important;
+        max-width: 100% !important;
+        display: block !important;
+      }
+    `;
+
+    function abrirAtalho(link) {
+      document.getElementById('campo-url').value = link;
+      abrirNavegadorNativo();
+    }
+
+    function abrirNavegadorNativo() {
+      let texto = document.getElementById('campo-url').value.trim();
+      if (!texto) return;
+
+      let urlFinal = texto;
+      if (!texto.includes('.') || texto.includes(' ')) {
+        urlFinal = 'https://google.com/search?q=' + encodeURIComponent(texto);
+      } else if (!texto.startsWith('http://') && !texto.startsWith('https://')) {
+        urlFinal = 'https://' + texto;
+      }
+
+      // Verifica se está rodando dentro do App Android instalado
+      if (window.cordova && cordova.InAppBrowser) {
+        const ref = cordova.InAppBrowser.open(urlFinal, '_blank', 'location=yes,zoom=yes,toolbar=yes,hardwareback=yes');
+        
+        // Assim que qualquer página terminar de carregar, injeta o CSS sem quebra
+        ref.addEventListener('loadstop', function() {
+          ref.insertCSS({ code: cssSemQuebra });
+        });
+      } else {
+        // Caso abra no navegador comum antes de compilar o APK
+        window.open(urlFinal, '_blank');
+      }
+    }
+
+    document.getElementById('campo-url').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        abrirNavegadorNativo();
+      }
+    });
+
+    function mostrarOffline() {
+      const texto = document.getElementById('entrada-offline').value;
+      document.getElementById('saida-offline').textContent = texto;
+    }
+  </script>
+
+</body>
+</html>
