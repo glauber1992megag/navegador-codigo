@@ -13,5 +13,4 @@
     <allow-intent href="https://*/*" />
     <preference name="Fullscreen" value="false" />
     <preference name="DisallowOverscroll" value="true" />
-    <plugin name="cordova-plugin-inappbrowser" spec="latest" />
 </widget>
