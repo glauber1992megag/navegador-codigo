@@ -32,8 +32,9 @@ jobs:
 
       - name: Preparar projeto e plataforma Android
         run: |
-          mkdir -p temp_app
-          cp -r www temp_app/
+          cordova create temp_app com.dev.navegadorcodigo "Navegador Dev"
+          rm -rf temp_app/www/*
+          cp -r www/* temp_app/www/
           cp config.xml temp_app/
           cd temp_app
           cordova platform add android
@@ -44,4 +45,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Navegador-Dev-APK
-          path: temp_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          path: temp_app/platforms/android/app/build/outputs/apk/**/*.apk
+          if-no-files-found: error
