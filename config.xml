@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.dev.navegadorcodigo" version="1.0.0" xmlns="http://w3.org" xmlns:cdv="http://apache.org">
+    <name>Navegador Dev</name>
+    <description>
+        Navegador multiplataforma que mantém blocos de código intactos sem quebra de linha.
+    </description>
+    <author email="dev@exemplo.com" href="https://github.com">
+        Desenvolvedor
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="Fullscreen" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <plugin name="cordova-plugin-inappbrowser" spec="latest" />
+</widget>
