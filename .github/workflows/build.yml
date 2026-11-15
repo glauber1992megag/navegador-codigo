@@ -24,8 +24,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Configurar Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Aceitar licenças do Android
+        run: yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
       - name: Instalar Apache Cordova
         run: npm install -g cordova
